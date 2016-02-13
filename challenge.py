@@ -6,46 +6,15 @@ def mulList(lst):
 Finds the item combination with the highest value and smallest weight, constrained
 by total volume <= V, via dynamic programming.
 
-dp[i][v] = (val, prev, w)
-dp[i][v] is the outstanding value in the tote having chosen 0 / 1 for the item 
-(taking or not taking), with v remaining capacity and w weight. Stores pointer to previous node.
-
-Base Case:
-dp[0][V] = [0, None, 0] # <Node> uses a mutable type (list) so that when passing in a reference to
-						#  the previous node this will hopefully prevent the overhead of nesting nodes 
-						# as in the immutable casee.g. (99, (12, (3,None,0), 1), 4)
-Recursive Case:
-dp[i][v][0] = max(dp[i-1][v], dp[i-1][v'] + item[2])  # <Item> (ID, price/value, volume, weight)
-
-if dp[i-1][v][0] > dp[i-1][v'][0]:
-	dp[i][v][1] = dp[i-1][v]
-elif dp[i-1][v][0] == dp[i-1][v'][0]:
-	# compare weight if equal value
-	dp[i][v][1] = dp[i-1][v] if dp[i-1][v][2] < dp[i-1][v'][2] else dp[i-1][v']
-else:
-	dp[i-1][v][1] = dp[i-1][v']
-
-where v' = v + item[3]
-
 Volume: 50 - Value: 41298 Items: [1370, 4887, 5084, 6532, 8699, 9972, 10496, 10981, 12856, 12979, 14301, 14448, 17788, 17896, 26950, 27376, 31288, 33638, 34414, 35280, 36175, 36769, 39987]
 
 450166
 '''
 
-# Really just a wrapper around a list of items so we dont have to constantly
-# recompute value, weight etc
-class Node:
-	def __init__(self, value, items, weight):
-		self.value = value
-		self.weight = weight
-		self.items = items
-	def __str__(self):
-		return 'Node Val: %s with Items: %s'%(self.value, self.items)
-
 def printTop(n, dp):
 	print('================Top %s==================='%n)
-	for k,v in sorted(dp.items(), key= lambda x:x[1].value, reverse=True)[0:n]:
-		print('Volume: %s - Value: %s Items: %s'%(k, v.value, v.items))
+	for k,v in sorted(dp.items(), key= lambda x:x[1][0], reverse=True)[0:n]:
+		print('Volume: %s - Value: %s Items: %s'%(k, v[0], v.[1]))
 
 def solve(items, V):
 	dp = {}
@@ -68,7 +37,7 @@ def solve(items, V):
 					# Else we compare the current Node with the new Node and 
 					# choose by highest value, lowest weight
 					currentBest = dp[Vnew]
-					if(currentBest[0] < node[0]):
+					if(currentBest[0] <= node[0]):
 						dp[Vnew] = node
 					elif currentBest[0] == node[0]:
 						if node[-1] < currentBest[-1]:
@@ -85,7 +54,7 @@ toteDims = [30, 35, 45] # Dimensions of tote, sorted asc
 V =  mulList(toteDims) # Total volume of tote
 items=[] # [(ID, price/value, volume, weight)]
 
-with open('small.csv','rb') as f:
+with open('products.csv','rb') as f:
 	
 	for line in f:
 		data = [int(e) for e in line.strip().split(',')]		
