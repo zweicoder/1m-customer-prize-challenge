@@ -74,7 +74,7 @@ def solve(items, V):
 						if node[-1] < currentBest[-1]:
 							dp[Vnew] = node
 
-	bestV = max(dp.keys(), key=(lambda k:dp[k][1]))
+	bestV = max(dp.keys(), key=(lambda k:dp[k][0]))
 	
 	node = dp[bestV]
 	# printTop(5,dp)
