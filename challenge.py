@@ -14,8 +14,8 @@ Volume: 50 - Value: 41298 Items: [1370, 4887, 5084, 6532, 8699, 9972, 10496, 109
 
 
 def solve(items, capacity):
+	# Base Case
     dp = {capacity: [0, [], 0]}
-    # Base Case
 
     # Recursive Case
     for i in range(len(items)):
@@ -33,11 +33,8 @@ def solve(items, capacity):
                     # Else we compare the current Node with the new Node and
                     # choose by highest value, lowest weight
                     current_node = dp[v_new]
-                    if current_node[0] <= node[0]:
+                    if current_node[0] <= node[0] or (current_node[0] == node[0] and node[-1] < current_node[-1]):
                         dp[v_new] = node
-                    elif current_node[0] == node[0]:
-                        if node[-1] < current_node[-1]:
-                            dp[v_new] = node
 
     best_node = max(dp.values(), key=(lambda v: v[0]))
 
@@ -49,7 +46,7 @@ tote_dims = [30, 35, 45]  # Dimensions of tote, manually sorted in ascending ord
 V = multiply_list(tote_dims)  # Total volume of tote
 products = []  # [(ID, price/value, volume, weight)]
 
-with open('products.csv', 'rb') as f:
+with open('small.csv', 'rb') as f:
     for line in f:
         data = [int(e) for e in line.strip().split(',')]
         # Compare dimension of items with dimension of box to see if they can fit. Eliminates 2067 items
@@ -57,4 +54,5 @@ with open('products.csv', 'rb') as f:
         if len(item_dims) == 3:
             products.append((data[0], data[1], multiply_list(data[2:5]), data[5]))
 
-    solve(products, V)
+sorted_products = sorted(products, key=lambda k:k[1], reverse=True)
+solve(sorted_products, V)
