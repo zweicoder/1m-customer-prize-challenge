@@ -2,7 +2,6 @@
 def multiply_list(lst):
     return reduce(lambda x, y: x * y, lst)
 
-
 '''
 Finds the item combination with the highest value and smallest weight, constrained
 by total volume <= V, via dynamic programming.
@@ -33,7 +32,7 @@ def solve(items, capacity):
                     # Else we compare the current Node with the new Node and
                     # choose by highest value, lowest weight
                     current_node = dp[v_new]
-                    if current_node[0] <= node[0] or (current_node[0] == node[0] and node[-1] < current_node[-1]):
+                    if current_node[0] < node[0] or (current_node[0] == node[0] and node[-1] < current_node[-1]):
                         dp[v_new] = node
 
     best_node = max(dp.values(), key=(lambda v: v[0]))
@@ -46,7 +45,7 @@ tote_dims = [30, 35, 45]  # Dimensions of tote, manually sorted in ascending ord
 V = multiply_list(tote_dims)  # Total volume of tote
 products = []  # [(ID, price/value, volume, weight)]
 
-with open('small.csv', 'rb') as f:
+with open('products.csv', 'rb') as f:
     for line in f:
         data = [int(e) for e in line.strip().split(',')]
         # Compare dimension of items with dimension of box to see if they can fit. Eliminates 2067 items
@@ -54,5 +53,4 @@ with open('small.csv', 'rb') as f:
         if len(item_dims) == 3:
             products.append((data[0], data[1], multiply_list(data[2:5]), data[5]))
 
-sorted_products = sorted(products, key=lambda k:k[1], reverse=True)
-solve(sorted_products, V)
+solve(products, V)
