@@ -26,6 +26,10 @@ else:
 	dp[i-1][v][1] = dp[i-1][v']
 
 where v' = v + item[3]
+
+Volume: 50 - Value: 41298 Items: [1370, 4887, 5084, 6532, 8699, 9972, 10496, 10981, 12856, 12979, 14301, 14448, 17788, 17896, 26950, 27376, 31288, 33638, 34414, 35280, 36175, 36769, 39987]
+
+450166
 '''
 
 # Really just a wrapper around a list of items so we dont have to constantly
