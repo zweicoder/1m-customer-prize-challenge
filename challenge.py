@@ -49,7 +49,7 @@ tote_dims = [30, 35, 45]  # Dimensions of tote, manually sorted in ascending ord
 V = multiply_list(tote_dims)  # Total volume of tote
 products = []  # [(ID, price/value, volume, weight)]
 
-with open('small.csv', 'rb') as f:
+with open('products.csv', 'rb') as f:
     for line in f:
         data = [int(e) for e in line.strip().split(',')]
         # Compare dimension of items with dimension of box to see if they can fit. Eliminates 2067 items
