@@ -50,7 +50,7 @@ def printTop(n, dp):
 def solve(items, V):
 	dp = {}
 	# Base Case
-	dp[V] = Node(0, [], 0)
+	dp[V] = [0, [], 0]
 
 	# Recursive Case
 	for i in range(len(items)):
@@ -60,7 +60,7 @@ def solve(items, V):
 			Vnew = Vold-item[2]
 			if Vnew >= 0:
 				old = dp[Vold]
-				node = Node(old.value + item[1], old.items + [item[0]], old.weight + item[-1])
+				node = [old[0] + item[1], old[1] + [item[0]], old[-1] + item[-1]]
 				if not Vnew in dp:
 					# If there isn't already a node there, directly set a node
 					dp[Vnew] = node
@@ -68,24 +68,24 @@ def solve(items, V):
 					# Else we compare the current Node with the new Node and 
 					# choose by highest value, lowest weight
 					currentBest = dp[Vnew]
-					if(currentBest.value < node.value):
+					if(currentBest[0] < node[0]):
 						dp[Vnew] = node
-					elif currentBest.value == node.value:
-						if node.weight < currentBest.weight:
+					elif currentBest[0] == node[0]:
+						if node[-1] < currentBest[-1]:
 							dp[Vnew] = node
 
-	bestV = max(dp.keys(), key=(lambda k:dp[k].value))
+	bestV = max(dp.keys(), key=(lambda k:dp[k][1]))
 	
 	node = dp[bestV]
-	printTop(5,dp)
-	print('Items: %s = %s'%(sorted(node.items), sum(node.items)))
-	return node.items
+	# printTop(5,dp)
+	print('Items: %s = %s'%(sorted(node[1]), sum(node[1])))
+	return node[1]
 
 toteDims = [30, 35, 45] # Dimensions of tote, sorted asc
 V =  mulList(toteDims) # Total volume of tote
 items=[] # [(ID, price/value, volume, weight)]
 
-with open('products.csv','rb') as f:
+with open('small.csv','rb') as f:
 	
 	for line in f:
 		data = [int(e) for e in line.strip().split(',')]		
