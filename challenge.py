@@ -27,8 +27,11 @@ else:
 
 where v' = v + item[3]
 '''
+
+# Really just a wrapper around a list of items so we dont have to constantly
+# recompute value, weight etc
 class Node:
-	def __init__(self, value, prev, weight):
+	def __init__(self, value, items, weight):
 		self.value = value
 		self.weight = weight
 		self.items = items
@@ -39,31 +42,29 @@ def solve(items, V):
 	dp = {}
 
 	# Base Case
-	dp[V] = Node(0, None, 0)
-	dp[V-items[0][2]] = Node(items[0][1], items[0][0], items[0][-1])
-	
+	dp[V] = Node(0, [], 0)
+	dp[V-items[0][2]] = Node(items[0][1], [items[0][0]], items[0][-1])
+
 	# Recursive Case
 	for i in range(1, len(items), 1):
 		if not i % 5:
 			print('Iteration: %s'%i)
 		item = items[i]
-		for Vold in dp[i-1].keys():
-			# Assign properties same as old if we choose to not take
-			# TODO dont waste space, just recursively search for smaller i
-			old = dp[i-1][Vold]
-			dp[i][Vold] = Node(old.value,old,old.weight)
+		for Vold in dp.keys():
+			# Choose not to take
+			old = dp[Vold]
 
 			# Update new volume if we choose to take
 			Vnew = Vold-item[2]
 			if Vnew >= 0:
-				node = Node(old.value + item[1], old, old.weight + item[-1])
-				if not Vnew in dp[i]:
+				node = Node(old.value + item[1], old.items + [item[0]], old.weight + item[-1])
+				if not Vnew in dp:
 					# If there isn't already a node there, directly set a node
-					dp[i][Vnew] = node
+					dp[Vnew] = node
 				else:
 					# Else we compare the current Node with the new Node and 
 					# choose by highest value, lowest weight
-					currentBest = dp[i][Vnew]
+					currentBest = dp[Vnew]
 					if(currentBest.value < node.value):
 						currentBest = node
 					elif currentBest.value == node.value:
@@ -72,31 +73,26 @@ def solve(items, V):
 
 	
 	# Backtrack
-	minVolume = min(dp[-1].keys())
-	print(len(dp[-1].keys()))
-	# print(dp[-1].keys())
-	node = dp[-1][minVolume]
-	print('Best Value: %s @ capacity of: %s' % (node.value, V-minVolume))
-	ret = []
-	for i in reversed(range(len(items))):
-		prevWeight = node.weight
-		node = node.prev
-		currentWeight = node.weight
-		if currentWeight != prevWeight:
-			ret.append(items[i][0])
-	print('Items: %s'%ret)
-	return ret
+	bestV = max(dp.keys(), key=(lambda k:dp[k].value))
+	# bestV = max(dp.values(), key=(lambda k:k.value))
+	
+	node = dp[bestV]
+	print('Best Value: %s @ capacity of: %s' % (node.value, V-bestV))
+	
+	print('Items: %s'%node.items)
+	return node.items
 
 toteDims = [30, 35, 45] # Dimensions of tote, sorted asc
 V =  mulList(toteDims) # Total volume of tote
 items=[] # [(ID, price/value, volume, weight)]
 
-with open('products.csv','rb') as f:
+with open('small.csv','rb') as f:
 	for line in f:
 		data = [int(e) for e in line.strip().split(',')]		
 		# Compare dimension of items with dimension of box to see if they can fit. Eliminates 2067 items
 		itemDims = [dim for dim, maxDim in zip(sorted(data[2:5]), toteDims) if dim <= maxDim]
 		if len(itemDims) == 3:
 			items.append((data[0], data[1], mulList(data[2:5]), data[5]))
+	print('Max Capacity: %s'%V)
 	products = solve(items, V)
 	# print(products)
