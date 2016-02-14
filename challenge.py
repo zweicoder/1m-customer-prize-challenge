@@ -15,7 +15,7 @@ Volume: 50 - Value: 41298 Items: [1370, 4887, 5084, 6532, 8699, 9972, 10496, 109
 
 def solve(items, capacity):
     # Base Case
-    dp = {capacity: (0, [], 0)}
+    dp = {capacity: (0, (), 0)}
 
     get_keys = dp.keys
     # Recursive Case
@@ -26,18 +26,16 @@ def solve(items, capacity):
             v_new = v_old - item_volume
             if v_new >= 0:
                 val, baggage, weight = dp[v_old]
-                node = (val + item_val, baggage + [item_id], weight + item_weight)
+                node = (val + item_val, baggage + (item_id,), weight + item_weight)
                 if v_new not in dp:
                     # If there isn't already a node there, directly set a node
                     dp[v_new] = node
                 else:
                     # Else we compare the current Node with the new Node and
                     # choose by highest value, lowest weight
-                    current_node = dp[v_new]
-                    if current_node[0] < node[0] or (current_node[0] == node[0] and node[-1] < current_node[-1]):
+                    current_val, b, current_weight = dp[v_new]
+                    if current_val < node[0] or (current_val == node[0] and node[-1] < current_weight):
                         dp[v_new] = node
-
-    # print('Items: %s = %s' % (sorted(best_node[1]), sum(best_node[1])))
     return max(dp.values())
 
 
@@ -45,7 +43,7 @@ tote_dims = [30, 35, 45]  # Dimensions of tote, manually sorted in ascending ord
 V = multiply_list(tote_dims)  # Total volume of tote
 products = []  # [(ID, price/value, volume, weight)]
 
-with open('small.csv', 'rb') as f:
+with open('products.csv', 'rb') as f:
     for line in f:
         data = [int(e) for e in line.strip().split(',')]
         # Compare dimension of items with dimension of box to see if they can fit. Eliminates 2067 items
