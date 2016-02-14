@@ -27,4 +27,4 @@ Using Dynamic Programming, I was able to come to a solution with `O(nV)`  time c
 ## Conclusion
 Dealing with a humongous data set with 47250 * ~18000 = ~85 **million** loops was an interesting challenge. I had to cut as much overhead as possible to keep space complexity to a bare minimum in order to speed up the algorithm. Originally I experimented with using a wrapper object for each `dp` node in this [branch](https://github.com/zweicoder/1m-customer-prize-challenge/tree/node-wrapper) for verbosity but it increased the time taken by ~1.5x, so I switched back to using lists. 
 
-Sadly the best timing I got after all the optimization was **8m1.649s** :cry:
+Sadly the best timing I got after all the optimization was **5m52.898s** :cry:
