@@ -2,6 +2,7 @@
 def multiply_list(lst):
     return reduce(lambda x, y: x * y, lst)
 
+
 '''
 Finds the item combination with the highest value and smallest weight, constrained
 by total volume <= V, via dynamic programming.
@@ -13,18 +14,19 @@ Volume: 50 - Value: 41298 Items: [1370, 4887, 5084, 6532, 8699, 9972, 10496, 109
 
 
 def solve(items, capacity):
-	# Base Case
-    dp = {capacity: [0, [], 0]}
+    # Base Case
+    dp = {capacity: (0, [], 0)}
 
+    get_keys = dp.keys
     # Recursive Case
     for i in range(len(items)):
-        item = items[i]
-        for v_old in dp.keys():
+        item_id, item_val, item_volume, item_weight = items[i]
+        for v_old in get_keys():
             # Update new volume if we choose to take
-            v_new = v_old - item[2]
+            v_new = v_old - item_volume
             if v_new >= 0:
-                prev_node = dp[v_old]
-                node = [prev_node[0] + item[1], prev_node[1] + [item[0]], prev_node[-1] + item[-1]]
+                val, baggage, weight = dp[v_old]
+                node = (val + item_val, baggage + [item_id], weight + item_weight)
                 if v_new not in dp:
                     # If there isn't already a node there, directly set a node
                     dp[v_new] = node
@@ -35,17 +37,15 @@ def solve(items, capacity):
                     if current_node[0] < node[0] or (current_node[0] == node[0] and node[-1] < current_node[-1]):
                         dp[v_new] = node
 
-    best_node = max(dp.values(), key=(lambda v: v[0]))
-
-    print('Items: %s = %s' % (sorted(best_node[1]), sum(best_node[1])))
-    return best_node[1]
+    # print('Items: %s = %s' % (sorted(best_node[1]), sum(best_node[1])))
+    return max(dp.values())
 
 
 tote_dims = [30, 35, 45]  # Dimensions of tote, manually sorted in ascending order
 V = multiply_list(tote_dims)  # Total volume of tote
 products = []  # [(ID, price/value, volume, weight)]
 
-with open('products.csv', 'rb') as f:
+with open('small.csv', 'rb') as f:
     for line in f:
         data = [int(e) for e in line.strip().split(',')]
         # Compare dimension of items with dimension of box to see if they can fit. Eliminates 2067 items
@@ -53,4 +53,4 @@ with open('products.csv', 'rb') as f:
         if len(item_dims) == 3:
             products.append((data[0], data[1], multiply_list(data[2:5]), data[5]))
 
-solve(products, V)
+print(solve(products, V))
